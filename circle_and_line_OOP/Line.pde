@@ -11,7 +11,6 @@ public class Line{
   boolean hovered;
   
   Vect2 P1, P2;          //points of the line in vector form
-  Vect2 couplingPoint;
   
   Line(){
     drawn = false;
@@ -21,7 +20,11 @@ public class Line{
   
   void draw(){
     stroke(229, 0, 0);
-    strokeWeight(2);
+    if (hovered){
+      strokeWeight(3);
+    } else {
+      strokeWeight(2);
+    }
     line(P1.x, P1.y, P2.x, P2.y);
   }
 

@@ -9,9 +9,7 @@ Vect2 mousePos;
 void setup() {
   circle = new Circle();
   ln = new Line();
-  
   P = new Point();
-  
   mousePos = new Vect2();
   pCoord = new Vect2();
   size(400,400);
@@ -25,19 +23,18 @@ void draw() {
   circle.draw();
   ln.draw();
    
-  if (P.userSet){
+  if (P.userSet && ln.drawn){
     //draws Point with userset precision
     P.draw();
-  }else{
+  }else if (!P.userSet && ln.drawn ){
     //draws default Point in a closest point to the circle center
     pCoord = Geometry.closestLineEndToPoint(circle.center, ln.P1, ln.P2);
     P.draw(pCoord.x, pCoord.y);
   }
-   
   
   //draws coupling
   if ( circle.drawn && ln.drawn ){
-
+    // DRAW COUPLING!!!
   }
 }
 
@@ -48,8 +45,17 @@ void mouseMoved(){
   //mouse hovers circle
   if ( Geometry.pointInsideCircle(circle, mousePos)){
     circle.hovered = true;
-  }else {
-    //mouse hovers no object
+  
+  //mouse hovers point
+  } else if (Geometry.pointOnPoint(P, mousePos)){
+    P.hovered = true;
+    
+  //mouse hovers line
+  } else if (Geometry.pointOnLine(ln, mousePos)){
+    ln.hovered = true;
+    
+  //mouse hovers no object
+  } else {
     circle.hovered = false;
     ln.hovered = false;
     P.hovered = false;
@@ -58,26 +64,57 @@ void mouseMoved(){
 
 void mousePressed() {
   if (mouseButton == LEFT) {
-    circle.center.x = mouseX;
-    circle.center.y = mouseY;
+    
+    if (!circle.drawn && !P.hovered){
+      circle.center.x = mouseX;
+      circle.center.y = mouseY;
+    }
+    if (!circle.drawn && P.hovered){
+      P.userSet = true;
+    }
+    if (circle.drawn && P.hovered){
+      P.userSet = true;
+    }
   } 
   else if(mouseButton == RIGHT) {
-    ln.P1.x = mouseX;
-    ln.P1.y = mouseY;
-    ln.P2.x = mouseX;
-    ln.P2.y = mouseY;
+    if(!ln.drawn){
+      ln.P1.x = mouseX;
+      ln.P1.y = mouseY;
+      ln.P2.x = mouseX;
+      ln.P2.y = mouseY;
+    }
   }
 }
 
 void mouseDragged() {
+  //circle is drawing
   if(mouseButton == LEFT) {
-    int relX = mouseX;
-    int relY = mouseY;
-    circle.radius = dist(circle.center.x, circle.center.y, relX, relY)*2;
+    //change she shape of circle if circle is not drawn yet
+    if (!circle.drawn && !P.hovered){
+      //draw the circle
+      int relX = mouseX;
+      int relY = mouseY;
+      circle.radius = dist(circle.center.x, circle.center.y, relX, relY)*2;
+    } else if (circle.drawn && circle.hovered) {
+      //move the circle
+      circle.center.x = mouseX;
+      circle.center.y = mouseY;
+    } else {
+      int relX = mouseX;
+      int relY = mouseY;
+      P.move(ln, relX, relY);
+    }
+    
   } 
+  //line is drawing
   else if(mouseButton == RIGHT) {
-    ln.P2.x = mouseX;
-    ln.P2.y = mouseY;
+    if(!ln.drawn){
+      //draw the line
+      ln.P2.x = mouseX;
+      ln.P2.y = mouseY;
+    }else if (ln.drawn && ln.hovered) {
+      //move the line
+    }
   }
 }
 

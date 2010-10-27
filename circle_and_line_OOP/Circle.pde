@@ -4,8 +4,7 @@ public class Circle {
   public boolean hovered;  //if mouse is on top of the circle
   public float radius;
   public Vect2 center;
-  
-  
+    
   Circle(){
     center = new Vect2(0,0);
     drawn = false;
