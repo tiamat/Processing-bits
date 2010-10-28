@@ -7,6 +7,7 @@ class Point{
  int aShift;    //indicates how far point is located from A 
  boolean hovered;//shows if mouse is above the point
  Vect2 mousPos;
+ boolean dragging;
  
  Point(){
    pos = new Vect2(0,0);
@@ -57,4 +58,8 @@ class Point{
    //update precision
  }
  
+ //draws point in the middle of the given line
+ void drawMiddle(Line ln){
+   pos = Vect2.midpoint(ln.P1, ln.P2);
+ }
 }
