@@ -63,7 +63,7 @@ static class Geometry {
  this function is designed to be used in mouse-driven UI and checks if mouse hovers point. 
  */
  static boolean pointOnPoint(Point pnt, Vect2 mPos){
-   if (dist(pnt.pos.x, pnt.pos.y, mPos.x, mPos.y ) <  2){
+   if (dist(pnt.pos.x, pnt.pos.y, mPos.x, mPos.y ) < accuracy * 2){
      return true;
    } else 
      return false;
