@@ -5,7 +5,6 @@ Line ln;
 Point P;
 Vect2 pCoord;
 Vect2 mousePos;
-Coupling cpl;
 
 void setup() {
   circle = new Circle();
@@ -13,7 +12,6 @@ void setup() {
   P = new Point();
   mousePos = new Vect2();
   pCoord = new Vect2();
-  cpl = new Coupling();
   size(400,400);
   background(255,255,255);
   smooth();
@@ -24,11 +22,7 @@ void draw() {
     
   circle.draw();
   ln.draw();
-  if (ln.drawn){
-    P.drawMiddle(ln);
-    P.draw();
-  }
-  /* 
+   
   if (P.userSet && ln.drawn){
     //draws Point with userset precision
     P.draw();
@@ -36,11 +30,11 @@ void draw() {
     //draws default Point in a closest point to the circle center
     pCoord = Geometry.closestLineEndToPoint(circle.center, ln.P1, ln.P2);
     P.draw(pCoord.x, pCoord.y);
-  }*/
+  }
   
   //draws coupling
   if ( circle.drawn && ln.drawn ){
-    cpl.draw(ln, circle, P);
+    // DRAW COUPLING!!!
   }
 }
 
@@ -64,7 +58,7 @@ void mouseMoved(){
   } else {
     circle.hovered = false;
     ln.hovered = false;
-    //P.hovered = false;
+    P.hovered = false;
   }
 }
 
@@ -75,10 +69,12 @@ void mousePressed() {
       circle.center.x = mouseX;
       circle.center.y = mouseY;
     }
-    /*if (P.hovered){
+    if (!circle.drawn && P.hovered){
       P.userSet = true;
-      P.dragging = true;
-    }*/
+    }
+    if (circle.drawn && P.hovered){
+      P.userSet = true;
+    }
   } 
   else if(mouseButton == RIGHT) {
     if(!ln.drawn){
@@ -103,11 +99,11 @@ void mouseDragged() {
       //move the circle
       circle.center.x = mouseX;
       circle.center.y = mouseY;
-    } /*else if (P.dragging){
+    } else {
       int relX = mouseX;
       int relY = mouseY;
       P.move(ln, relX, relY);
-    }*/
+    }
     
   } 
   //line is drawing
@@ -125,7 +121,6 @@ void mouseDragged() {
 void mouseReleased() {
   if(mouseButton == LEFT) {
     circle.drawn = true;
-    //P.dragging = false;
   } 
   else if(mouseButton == RIGHT) {
     ln.drawn = true;
