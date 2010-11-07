@@ -13,7 +13,7 @@ String couplingMsg;
 
 String couplingRadInput;
 
-Circle circle;
+Circle circle;    
 Line ln;
 Point P;
 Coupling cpl;
@@ -99,12 +99,8 @@ void mouseMoved(){
   mousePos.x = mouseX;
   mousePos.y = mouseY;
   
-  //mouse hovers circle
-  if ( Geometry.pointInsideCircle(circle, mousePos)){
-    circle.hovered = true;
-  
   //mouse hovers point
-  } else if (Geometry.pointOnPoint(P, mousePos)){
+  if (Geometry.pointOnPoint(P, mousePos)){
     P.hovered = true;
     
   //mouse hovers line
@@ -112,6 +108,9 @@ void mouseMoved(){
     ln.hovered = true;
     
   //mouse hovers no object
+  } if ( Geometry.pointInsideCircle(circle, mousePos)){
+    circle.hovered = true;
+  
   } else {
     circle.hovered = false;
     ln.hovered = false;

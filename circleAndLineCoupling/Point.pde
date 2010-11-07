@@ -50,7 +50,7 @@ class Point{
  void move(Line ln, int newX, int newY){
    // find projection of new mouse position to the line, point belogs to
    mousPos = new Vect2(newX, newY);
-   pos = Geometry.pointAndLineIntersection(mousePos, ln.P1, ln.P2);
+   pos = Space2.closestPointOnLineSegment(mousePos, ln.P1, ln.P2);
    println(mousePos);
    println(pos);
    // calculate distance between projection and line.P1

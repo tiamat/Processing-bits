@@ -79,9 +79,10 @@ public class Coupling {
     hp1.x = couplingRad / sqrt( 1 + sq(helperPerpM) ) + helperPerp.x;
     hp1.y = helperPerpM * (hp1.x - helperPerp.x) + helperPerp.y;
 
-    hp2.x = -(couplingRad / sqrt ( 1 + sq ( helperPerpM) ) ) + helperPerp.x;
+    hp2.x = -1*(couplingRad / sqrt ( 1 + sq ( helperPerpM) ) ) + helperPerp.x;
     hp2.y = helperPerpM * (hp2.x - helperPerp.x) + helperPerp.y;    
-
+    
+    
     //***4
     //choose closest one to the center of the initial circle - this one is going to belong to (helperLine)
     Vect2 closestPointForPar = new Vect2();
@@ -94,20 +95,19 @@ public class Coupling {
     }
 
     //substituting formula for line, parallel to initial line and going through (closestPointForPar)
-    float ParLineM = -1 / helperPerpM;
-    float ParLineB = closestPointForPar.y - ParLineM * closestPointForPar.x;
+    float ParLineM = -1 / helperPerpM;          //slope is perpendicular to helper line
+    float ParLineB = closestPointForPar.y - ParLineM * closestPointForPar.x;//B is substituted by knowing point and slope (b = y - k*x)
 
     //substituing second point on parallel line to draw the line grahically
     Vect2 secParPoint = new Vect2(0,0);
     Vect2 secParPoint2 = new Vect2(0,0);
-
+        
     if ( ParLineM < 0) {
       secParPoint = new Vect2(0,ParLineB);
       secParPoint2 = new Vect2((-1)*ParLineB/ParLineM,0);
-    }  
-    else if ( ParLineM > 0 ) {
-      //secParPoint = new Vect2(0,ParLineB);
-      //secParPoint2 = new Vect2((-1)*ParLineB/ParLineM,0);
+    }  else if ( ParLineM > 0 ) {
+        secParPoint = new Vect2(width,ParLineM*width + ParLineB);
+        secParPoint2 = new Vect2((-1)*ParLineB/ParLineM,0);
     }
 
     //*** 5
@@ -150,30 +150,79 @@ public class Coupling {
       }
       
       couplingLineEnd = Space2.closestPointOnLine(center, ln.P1, ln.P2);
-      
       radius = dist(couplingLineEnd.x, couplingLineEnd.y, center.x, center.y);
-        
 
-      
-      translate(center.x, center.y);
+      //intersection angle calculation
       float tana = (center.y - couplingLineEnd.y )/(center.x- couplingLineEnd.x);  
-      float startAngle = atan(tana);
-      
-      float tanb = (couplingCircleEnd.y - center.y)/(couplingCircleEnd.x - center.x);
-      float endAngle = atan(tanb);
-      
-      println("start angle " + startAngle + "; end angle " + endAngle);
+      float lineRadAngle = atan(tana);      
+      float tanb = (center.y - couplingCircleEnd.y)/(center.x - couplingCircleEnd.x);
+      float circleRadAngle = atan(tanb);
+
+      //drawing coupling (YEEAH!)
       stroke(247, 128, 0);
-      //float startAngle =  atan(couplingLineEnd.y,couplingLineEnd.x);
-      //float endAngle = atan(couplingCircleEnd.y, couplingCircleEnd.x);
+     
       
-      translate(-center.x,-center.y);
-      //line(couplingCircleEnd.x, couplingCircleEnd.y, couplingLineEnd.x, couplingLineEnd.y);
-      arc (center.x, center.y, radius, radius, startAngle , PI + endAngle);
-      //ellipse(center.x, center.y, radius, radius);
+      
+      
+      println("Circle angle : " + circleRadAngle + " line angle " + lineRadAngle);
+      //if line tangent is negative
+      if(ln.slope < 0){
+        //if circle is above the line, i.e line is in 1st qurter
+        if(Geometry.relativePosition(center,couplingLineEnd) ==1 ){
+          //if circle end is in 1st quarter
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 1 || Geometry.relativePosition(center,couplingCircleEnd) == 4){  
+            arc (center.x, center.y, radius, radius, 0 + lineRadAngle, 0 + circleRadAngle);  
+          }
+          //if circle end is in 2nd quarter
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 2 || Geometry.relativePosition(center,couplingCircleEnd) == 3){  
+            arc (center.x, center.y, radius, radius, 0 + lineRadAngle, PI + circleRadAngle); 
+          }
+        
+        //if circle is below the line, e.g line is in 3rd qurter
+        }else if (Geometry.relativePosition(center,couplingLineEnd) == 3 ){
+          //if circle radius is in 2nd quarter:
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 2 || Geometry.relativePosition(center,couplingCircleEnd) == 3){
+            arc (center.x, center.y, radius, radius, PI + circleRadAngle , PI +  lineRadAngle); 
+          }    
+          //if cirle radius is in 1st quarter
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 1 || Geometry.relativePosition(center,couplingCircleEnd) == 4){
+            arc (center.x, center.y, radius, radius, 0 + circleRadAngle , PI +  lineRadAngle);      
+          }
+        }
+        
+      //if line tangent is positive
+      }else if(ln.slope > 0){
+        //if circle is below the line
+        if(Geometry.relativePosition(center,couplingLineEnd) == 4 ){
+          //if circle radius is in 2nd quarter:
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 2  || Geometry.relativePosition(center,couplingCircleEnd) == 3){
+            arc (center.x, center.y, radius, radius, 0 + lineRadAngle, PI + circleRadAngle ); 
+          }    
+          //if cirle radius is in 1st quarter
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 1 || Geometry.relativePosition(center,couplingCircleEnd) == 4){
+            arc (center.x, center.y, radius, radius, 0 + lineRadAngle, 0 + circleRadAngle);      
+          }     
+          
+          
+        //if circle is above the line
+        } else if (Geometry.relativePosition(center,couplingLineEnd) == 2){
+          //if circle radius is in 1st quarter:
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 1 || Geometry.relativePosition(center,couplingCircleEnd) == 4){
+            arc (center.x, center.y, radius, radius, 0 + circleRadAngle, PI + lineRadAngle ); 
+          }    
+          //if cirle radius is in 2nd quarter
+          if(Geometry.relativePosition(center,couplingCircleEnd) == 2 || Geometry.relativePosition(center,couplingCircleEnd) == 3){
+            arc (center.x, center.y, radius, radius, PI + circleRadAngle, PI + lineRadAngle);        
+          }
+        }
+       // arc (center.x, center.y, radius, radius, lineRadAngle, circleRadAngle );      //positive tangent, circle below
+      //arc (center.x, center.y, radius, radius, circleRadAngle, lineRadAngle + PI);    //positive tangent, circle above +++
+      }
+      
+      
       
     } else {
-      println("ERROR: Coupling can not be drawn. Helper circle and parralel line do not intersect!!!");
+      println("ERROR: Coupling can not be drawn. Helper circle and helper line  do not have intersection points!!!");
       return;
     }
 
@@ -187,8 +236,9 @@ public class Coupling {
       noFill();
       ellipse(circle.center.x, circle.center.y, extendedRad, extendedRad); //helper circle
       line(circle.center.x, circle.center.y, helperPerp.x, helperPerp.y);  //perpendicular from circel center to initial line
+      
       ellipse(closestPointForPar.x,closestPointForPar.y,2,2);              //intersection between perp. and the initial circle
-      //println(ParLineM);
+      //println("Parallel line. tg:  " +  ParLineM + " B: " + ParLineB);
       line(secParPoint.x, secParPoint.y, secParPoint2.x, secParPoint2.y);  //helper line, perallel to initial
       
       ellipse(helpersIntersections[0].x, helpersIntersections[0].y, 2,2);  //intersection 1 between helpers (line and circle)

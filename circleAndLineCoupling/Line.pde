@@ -9,7 +9,8 @@ public class Line{
   
   boolean drawn;         //indicates whether line have been drawn by user
   boolean hovered;
-  float slope;
+  float slope;           //line's tg
+  float b;
   
   Vect2 P1, P2;          //points of the line in vector form
   
@@ -29,10 +30,9 @@ public class Line{
   }
   
   
-  
-  
   void draw(){
     slope = (P2.y - P1.y)/(P2.x - P1.x);
+    b = P2.y - slope * P2.x;
     stroke(229, 0, 0);
     if (hovered){
       strokeWeight(3);
@@ -42,6 +42,7 @@ public class Line{
     noFill();
     line(P1.x, P1.y, P2.x, P2.y);
     strokeWeight(1);
+    //println("Original line's slope is: " + slope + "line's B is: " + b);
   }
 
   public void setCouplingPoint(Vect2 point){

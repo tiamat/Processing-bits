@@ -1,31 +1,40 @@
 static class Geometry {
-
-  static private final float accuracy = 1;
-
-  static class Position_ {
-    static boolean above;
-    static boolean below;
-
-    Position_() {
-    }
-  }
-  //static enum _relationalPosition {leftTop, rightTop, leftBottom, rightBottom }
-  //static _relationalPosition relationalPosition;
-
-
-
+  
+  static private float accuracy;
+  
   public Geometry() {
-    Position_ position = new Position_();
+    accuracy = 1;
   }
 
+/*returns unit circle quarter position of one point to another, 
+considering first point a cnter of a unit cicle.
+@param   center - center of imaginery unit circle
+@param   checkPoint - relative point
 
-  /*
- method calculates shortest path between point and vector
-   */
-  static Vect2 pointAndLineIntersection(Vect2 lPoint, Vect2 line1, Vect2 line2) {
-    Vect2 intersectionPoint = Space2.closestPointOnLineSegment( lPoint, line1, line2 );
-    return intersectionPoint;
+@return 1 - 1st quarter, e.g. right top quarter
+@return 2 - 2nd quarter, e.g. left top quarter
+@return 3 - 3nd quarter, e.g  left bottom quarter
+@return 4 - 4th quarter, e.g  right bottom quarter
+@return 0 - checkPoint is on the border of the quarters
+*/
+static int relativePosition(Vect2 center, Vect2 checkPoint){
+  //in the first quarter. Note, in screen coordinates posive Y goes down,
+  //and opposite to casual cartesian coordinates. That is why quarters appear to be 
+  //vertically reversed.
+  if (center.x < checkPoint.x && center.y > checkPoint.y){
+    return 4;
+  }else if (center.x > checkPoint.x && center.y > checkPoint.y) {
+    return 3;
+  } else if (center.x > checkPoint.x && center.y < checkPoint.y){
+    return 2;
+  } else if (center.x < checkPoint.x && center.y < checkPoint.y){
+    return 1;
+  } else {
+    return 0;
   }
+}
+
+
 
   /*
   @input cCen - input point
@@ -58,7 +67,7 @@ static class Geometry {
   }
   /*
  @returns true if point belongs to line  
-   @returns false if not. 
+   @return false if not. 
    *
    the function is not mathematically correct and shall be applied only on user interfaces. 
    It's intended to rougly determine if mouse hovers the line
@@ -67,7 +76,7 @@ static class Geometry {
    point and line is less than 1. The number can be increased due to usability 
    */
   static boolean pointOnLine(Line ln, Vect2 pnt) {
-    Vect2 intersection = pointAndLineIntersection(pnt, ln.P1, ln.P2);
+    Vect2 intersection = Space2.closestPointOnLineSegment( pnt, ln.P1, ln.P2 );
     float distance = dist(pnt.x, pnt.y, intersection.x, intersection.y);
     if (distance < accuracy  ) {
       return true;
@@ -190,13 +199,6 @@ static class Geometry {
     c -= cr * cr;
     float bb4ac = b * b - 4 * a * c;
 
-    //println(bb4ac);
-    /*
-    if (bb4ac < 0) {  // Not intersecting
-     return false;
-     }
-     else {
-     */
     float mu = (-b + sqrt( b*b - 4*a*c )) / (2*a);
     float ix1 = x1 + mu*(dx);
     float iy1 = y1 + mu*(dy);
@@ -205,31 +207,9 @@ static class Geometry {
     float iy2 = y1 + mu*(dy);
 
     // The intersection points
-    //ellipse(ix1, iy1, 10, 10);
-    //ellipse(ix2, iy2, 10, 10);
     intersections[0] = new Vect2(ix1, iy1);
     intersections[1] = new Vect2(ix2, iy2);
     return intersections;
-    /*
-      float testX;
-     float testY;
-     // Figure out which point is closer to the circle
-     if (dist(x1, y1, cx, cy) < dist(x2, y2, cx, cy)) {
-     testX = x2;
-     testY = y2;
-     } 
-     else {
-     testX = x1;
-     testY = y1;
-     }
-     
-     if (dist(testX, testY, ix1, iy1) < dist(x1, y1, x2, y2) || dist(testX, testY, ix2, iy2) < dist(x1, y1, x2, y2)) {
-     return true;
-     } 
-     else {
-     return false;
-     }
-     }*/
   }
 }
 
