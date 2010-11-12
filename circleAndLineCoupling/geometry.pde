@@ -1,9 +1,9 @@
 static class Geometry {
   
-  static private float accuracy;
+  static private final float accuracy = 2;
   
   public Geometry() {
-    accuracy = 1;
+    
   }
 
 /*returns unit circle quarter position of one point to another, 
@@ -58,14 +58,39 @@ static int relativePosition(Vect2 center, Vect2 checkPoint){
    @returns false if point is outside the circle.
    */
   static boolean pointInsideCircle( Circle cir, Vect2 pnt) {
-    if(dist(cir.center.x, cir.center.y, pnt.x, pnt.y) <= cir.radius) {
+    if(dist(cir.center.x, cir.center.y, pnt.x, pnt.y) <= cir.radius - accuracy) {
       return true;
     }
     else {
       return false;
     }
   }
-  /*
+  
+  static boolean pointInsideCircle(int cenX, int cenY, float radius, Vect2 pnt){
+   if(dist( cenX, cenY, pnt.x, pnt.y ) <= radius - accuracy){
+     return true;
+   } else {
+     return false;
+   }
+  }
+  
+  static boolean pointInsideCircle(Vect2 center, float radius, Vect2 pnt){
+    if(dist(center.x, center.y, pnt.x, pnt.y) <= radius - accuracy) {
+     return true;
+   } else {
+     return false;
+   }
+  }
+  
+  static boolean pointOnCircleBorder(Circle cir, Vect2 pnt){
+    float dst = dist(cir.center.x, cir.center.y, pnt.x, pnt.y);
+    if (dst <= cir.radius + accuracy && dst >= cir.radius - accuracy) {
+          return true;
+        }else
+          return false;
+  }
+  
+ /*
  @returns true if point belongs to line  
    @return false if not. 
    *
@@ -76,8 +101,8 @@ static int relativePosition(Vect2 center, Vect2 checkPoint){
    point and line is less than 1. The number can be increased due to usability 
    */
   static boolean pointOnLine(Line ln, Vect2 pnt) {
-    Vect2 intersection = Space2.closestPointOnLineSegment( pnt, ln.P1, ln.P2 );
-    float distance = dist(pnt.x, pnt.y, intersection.x, intersection.y);
+    Vect2 perpIntersection = Space2.closestPointOnLineSegment( pnt, ln.P1, ln.P2 );
+    float distance = dist(pnt.x, pnt.y, perpIntersection.x, perpIntersection.y);
     if (distance < accuracy  ) {
       return true;
     } 
@@ -86,6 +111,16 @@ static int relativePosition(Vect2 center, Vect2 checkPoint){
     }
   }
 
+
+
+  
+  static boolean pointOnEndOfLineSegment(Line ln, Vect2 pnt){
+    if (Vect2.distance(ln.P1, pnt) < accuracy||  Vect2.distance(ln.P2, pnt) < accuracy){
+      return true;
+    } else {
+      return false;
+    }
+  }
   /*
   @input Vect2 main - subject of comparison
   @input Vect2[] points

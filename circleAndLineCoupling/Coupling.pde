@@ -1,5 +1,6 @@
 public class Coupling {
   boolean drawHelpers;              //shows whether to draw helper-lines;
+  boolean exists;                   //true if coupling exists
   private boolean radiusSpecified;  //shows whether radius have been specified by user
   float radius;                   //Coupling's radius
   Vect2 center;                   //Coupling ARC's center point
@@ -125,6 +126,7 @@ public class Coupling {
     
     //checking for helpers intersection
     if(Geometry.circleRayIntersect(helperLine, helperCircle)) {
+      this.exists = true;
       helpersIntersections = Geometry.circleRayIntersectPoints(helperLine, helperCircle);
       
       //choosing helpersIntersections[0] for coupling center. helpersIntersections[1] can be chosen also. 
@@ -160,11 +162,8 @@ public class Coupling {
 
       //drawing coupling (YEEAH!)
       stroke(247, 128, 0);
-     
       
-      
-      
-      println("Circle angle : " + circleRadAngle + " line angle " + lineRadAngle);
+      //println("Circle angle : " + circleRadAngle + " line angle " + lineRadAngle);
       //if line tangent is negative
       if(ln.slope < 0){
         //if circle is above the line, i.e line is in 1st qurter
@@ -222,14 +221,12 @@ public class Coupling {
       
       
     } else {
-      println("ERROR: Coupling can not be drawn. Helper circle and helper line  do not have intersection points!!!");
+      this.exists = false;
+      //println("ERROR: Coupling can not be drawn. Helper circle and helper line  do not have intersection points!!!");
       return;
     }
 
     
-
-
-
     if (drawHelpers) {
       stroke(200, 200, 200);
       strokeWeight(1);

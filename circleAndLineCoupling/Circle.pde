@@ -2,8 +2,10 @@ public class Circle {
 
   public boolean drawn;
   public boolean hovered;  //if mouse is on top of the circle
+  public boolean resizing; 
   public float radius;    //Diameter IRL, wrong naming
-  public Vect2 center;
+  
+  public Vect2 center; 
 
   Circle() {
     center = new Vect2(0,0);
